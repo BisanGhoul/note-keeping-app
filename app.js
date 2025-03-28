@@ -1,11 +1,8 @@
 import express from "express";
+import notesRoutes from "./api/routes/notes.js";
 
 const app = express();
 
-app.use((req, res) => {
-    res.status(200).json({
-        message: "it works",
-    });
-});
+app.use("/notes", notesRoutes);
 
 export default app;
