@@ -1,0 +1,21 @@
+{
+  "name": "note-keeping-app",
+  "version": "1.0.0",
+  "description": "an API for a note keeping app using Node js, Express and Mongo DB",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "author": "Bisan Ghoul",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "type": "module"
+}
