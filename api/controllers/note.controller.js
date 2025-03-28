@@ -1,26 +1,40 @@
 import Note from "../models/note.js";
 import mongoose from "mongoose";
+import { getPaginatedNotes } from "../services/notes.service.js";
 
 // Get all notes
 export const getAllNotes = async (req, res) => {
     try {
-        const notes = await Note.find().select("title content createdAt _id");
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10;
+
+        if (isNaN(limit) || isNaN(page)) {
+            return res
+                .status(400)
+                .json({ message: "Invalid page or limit parameter" });
+        }
+        const { notes, totalCount, totalPages } = await getPaginatedNotes(
+            page,
+            limit
+        );
 
         res.status(200).json({
-            count: notes.length,
-            notes: notes.map((note) => ({
-                title: note.title,
-                content: note.content,
-                createdAt: note.createdAt,
-                _id: note._id,
-                request: {
-                    type: "GET",
-                    url: `http://localhost:3000/notes/${note._id}`,
-                },
-            })),
+            notes,
+            metadata: {
+                currentPage: parseInt(page),
+                totalPages,
+                totalCount,
+                page,
+                limit,
+            },
+            request: {
+                type: "GET",
+                url: `http://localhost:3000/notes?page=${page}&limit=${limit}`,
+            },
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Error fetching notes:", error);
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -52,6 +66,50 @@ export const getNoteByID = async (req, res, next) => {
         });
     } catch (error) {
         console.error("Error fetching note:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+/* for training purposes */
+const getAllNotesUsingNormalFiltering = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10;
+
+        if (isNaN(limit) || isNaN(page)) {
+            return res
+                .status(400)
+                .json({ message: "Invalid page or limit parameter" });
+        }
+
+        const skip = (page - 1) * limit;
+
+        const notes = await Note.find()
+            .skip(skip)
+            .limit(limit)
+            .select("title content createdAt _id")
+            .sort({ createdAt: -1 });
+
+        const totalCount = await Note.countDocuments();
+
+        const totalPages = Math.ceil(totalCount / limit);
+
+        res.status(200).json({
+            notes,
+            metadata: {
+                currentPage: page,
+                totalPages,
+                totalCount,
+                page,
+                limit,
+            },
+            request: {
+                type: "GET",
+                url: `http://localhost:3000/notes?page=${page}&limit=${limit}`,
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching notes:", error);
         res.status(500).json({ error: error.message });
     }
 };
