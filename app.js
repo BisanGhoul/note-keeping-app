@@ -3,8 +3,14 @@ import notesRoutes from "./api/routes/notes.js";
 import morgan from "morgan";
 import corsMiddleware from "./api/middleware/cors.js";
 import errorHandler from "./api/middleware/errorHandler.js";
+import connectDB from "./api/database/db.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
+
+connectDB();
 
 app.use(corsMiddleware);
 app.use(morgan("dev"));
