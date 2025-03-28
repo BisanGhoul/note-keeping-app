@@ -38,6 +38,47 @@ export const getAllNotes = async (req, res) => {
     }
 };
 
+// Search notes (with pagination)
+export const searchNotes = async (req, res) => {
+    try {
+        const query = req.query.query || "";
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10;
+
+        if (isNaN(page) || isNaN(limit)) {
+            return res
+                .status(400)
+                .json({ message: "Invalid page or limit parameter" });
+        }
+
+        // Call the same function, but with a search query
+        const { notes, totalCount, totalPages } = await getPaginatedNotes(
+            page,
+            limit,
+            query
+        );
+
+        res.status(200).json({
+            notes,
+            metadata: {
+                currentPage: page,
+                totalPages,
+                totalCount,
+                page,
+                limit,
+                query,
+            },
+            request: {
+                type: "GET",
+                url: `http://localhost:3000/notes/search?query=${query}&page=${page}&limit=${limit}`,
+            },
+        });
+    } catch (error) {
+        console.error("Error searching notes:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Get a single note by ID
 export const getNoteByID = async (req, res, next) => {
     try {
