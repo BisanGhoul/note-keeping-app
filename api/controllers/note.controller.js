@@ -51,7 +51,6 @@ export const searchNotes = async (req, res) => {
                 .json({ message: "Invalid page or limit parameter" });
         }
 
-        // Call the same function, but with a search query
         const { notes, totalCount, totalPages } = await getPaginatedNotes(
             page,
             limit,
@@ -107,6 +106,38 @@ export const getNoteByID = async (req, res, next) => {
         });
     } catch (error) {
         console.error("Error fetching note:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Add a new note
+export const addNote = async (req, res) => {
+    try {
+        const { title, content } = req.body;
+
+        if (!title || !content || !title.trim() || !content.trim()) {
+            return res.status(400).json({
+                message: "Title and content are required fields.",
+            });
+        }
+
+        const newNote = new Note({
+            title,
+            content,
+        });
+
+        const savedNote = await newNote.save();
+
+        res.status(201).json({
+            message: "Note created successfully",
+            note: savedNote,
+            request: {
+                type: "GET",
+                url: `http://localhost:3000/notes/${savedNote._id}`,
+            },
+        });
+    } catch (error) {
+        console.error("Error creating note:", error);
         res.status(500).json({ error: error.message });
     }
 };
