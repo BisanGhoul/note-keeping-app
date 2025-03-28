@@ -1,10 +1,13 @@
 import express from "express";
-
+import {
+    getAllNotes,
+    searchNotes,
+    getNoteByID,
+} from "../controllers/note.controller.js";
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-    res.status(200).json({
-        message: "handling GET requests at /notes",
-    });
-});
+router.get("/", getAllNotes);
+router.get("/search", searchNotes);
+router.get("/:noteID", getNoteByID);
+
 export default router;
