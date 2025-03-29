@@ -167,6 +167,92 @@ export const deleteNote = async (req, res) => {
     }
 };
 
+// Update a note by ID
+export const updateNote = async (req, res) => {
+    try {
+        const { noteID } = req.params;
+        const { title, content } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(noteID)) {
+            return res.status(400).json({ message: "Invalid Note ID format." });
+        }
+
+        if (!title || !content || !title.trim() || !content.trim()) {
+            return res.status(400).json({
+                message: "Title and content are required fields.",
+            });
+        }
+
+        const updatedNote = await Note.findByIdAndUpdate(
+            noteID,
+            { title, content, updatedAt: new Date() },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedNote) {
+            return res.status(404).json({ message: "Note not found." });
+        }
+
+        res.status(200).json({
+            message: "Note updated successfully",
+            note: updatedNote,
+            request: {
+                type: "GET",
+                url: `http://localhost:3000/notes/${updatedNote._id}`,
+            },
+        });
+    } catch (error) {
+        console.error("Error updating note:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Partially update a note (title, content, or both)
+export const partiallyUpdateNote = async (req, res) => {
+    try {
+        const { noteID } = req.params;
+        const { title, content } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(noteID)) {
+            return res.status(400).json({ message: "Invalid Note ID format." });
+        }
+
+        if (!title?.trim() && !content?.trim()) {
+            return res.status(400).json({
+                message:
+                    "At least one of title or content is required for update.",
+            });
+        }
+
+        const updateFields = {};
+        if (title?.trim()) updateFields.title = title.trim();
+        if (content?.trim()) updateFields.content = content.trim();
+        updateFields.updatedAt = new Date();
+
+        const updatedNote = await Note.findByIdAndUpdate(
+            noteID,
+            { $set: updateFields },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedNote) {
+            return res.status(404).json({ message: "Note not found." });
+        }
+
+        res.status(200).json({
+            message: "Note updated successfully",
+            note: updatedNote,
+            request: {
+                type: "GET",
+                url: `http://localhost:3000/notes/${updatedNote._id}`,
+            },
+        });
+    } catch (error) {
+        console.error("Error updating note:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 /* for training purposes */
 const getAllNotesUsingNormalFiltering = async (req, res) => {
     try {
