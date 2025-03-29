@@ -142,6 +142,31 @@ export const addNote = async (req, res) => {
     }
 };
 
+// Delete a note by ID
+export const deleteNote = async (req, res) => {
+    try {
+        const { noteID } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(noteID)) {
+            return res.status(400).json({ message: "Invalid Note ID format." });
+        }
+
+        const deletedNote = await Note.findByIdAndDelete(noteID);
+
+        if (!deletedNote) {
+            return res.status(404).json({ message: "Note not found." });
+        }
+
+        res.status(200).json({
+            message: "Note deleted successfully",
+            deletedNote,
+        });
+    } catch (error) {
+        console.error("Error deleting note:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 /* for training purposes */
 const getAllNotesUsingNormalFiltering = async (req, res) => {
     try {
