@@ -63,11 +63,13 @@ npm install
 ```
 
 ### 3. Set up environment variables
-Create a `.env` file in the root of the project and add the following variables:
-```bash
-DB_URI=your-mongodb-uri
-PORT=3000
-```
+replace the placeholders in the .env file with your actual username, password and db name
+   ```env
+  # MongoDB Atlas Connection
+  DB_URI=mongodb+srv://<username>:<password>@node-fts.rlvcwsy.mongodb.net/<dbname>?retryWrites=true&w=majority&appName=node-fts  
+  # Server Port (optional)
+  PORT=3000
+  ```
 
 ### 4. Start the server
 ```bash
@@ -75,6 +77,19 @@ npm run dev
 ```
 
 The server will now be running on `http://localhost:3000`. or the port set in the .env file
+## Project Structure
+
+ **note-keeping-app**  
+ ┣ 📂 **api**  
+ ┃ ┣ 📂 **controllers**         - API Logic (CRUD)  
+ ┃ ┣ 📂 **middleware**          - CORS & Error Handling  
+ ┃ ┣ 📂 **routes**              - API Routes  
+ ┃ ┣ 📂 **models**              - Mongoose Schema  
+ ┃ ┣ 📂 **services**            - Business Logic (Pagination & Search)  
+ ┣ 📜 **server.js**             - Server Setup  
+ ┣ 📜 **app.js**                - Express App Initialization  
+
+
 
 ## Example Requests
 
