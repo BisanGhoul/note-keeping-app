@@ -6,7 +6,7 @@ A RESTful API for managing notes with full CRUD operations, built with Node.js, 
 
 Click the button below to open the API in Postman and test the endpoints:
 
-[<img src="https://run.pstmn.io/button.svg" alt="Run in Postman" width="150">](https://your-postman-collection-url)
+[<img src="https://run.pstmn.io/button.svg" alt="Run in Postman" width="150">](https://www.postman.com/aviation-operator-1999495/note-keeper-api/overview)
 
 ## Features
 
